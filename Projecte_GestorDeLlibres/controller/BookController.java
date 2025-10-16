@@ -25,7 +25,7 @@ public class BookController {
         try (RandomAccessFile raf = new RandomAccessFile(FILE_NAME, "rw")) {
             
             if (findBookByISBN(isbn) != null) {
-                System.out.println("❌ Error: El llibre amb ISBN " + isbn + " ja existeix.");
+                System.out.println(" Error: El llibre amb ISBN " + isbn + " ja existeix.");
                 return;
             }
             
@@ -33,9 +33,9 @@ public class BookController {
             raf.writeUTF(fixLength(isbn, ISBN_SIZE));
             raf.writeUTF(fixLength(title, TITLE_SIZE));
             raf.writeUTF(fixLength(author, AUTHOR_SIZE));
-            System.out.println("✅ Llibre afegit correctament: " + title);
+            System.out.println(" Llibre afegit correctament: " + title);
         } catch (IOException e) {
-            System.out.println("❌ Error afegint el llibre: " + e.getMessage());
+            System.out.println(" Error afegint el llibre: " + e.getMessage());
         }
     }
 
@@ -95,14 +95,14 @@ public class BookController {
                     
                     
                     raf.setLength(fileLength - RECORD_SIZE);
-                    System.out.println("✅ Llibre eliminat correctament: " + title);
+                    System.out.println(" Llibre eliminat correctament: " + title);
                     return;
                 }
                 currentPos = raf.getFilePointer();
             }
-            System.out.println("❌ Error: Llibre amb ISBN " + isbn + " no trobat.");
+            System.out.println(" Error: Llibre amb ISBN " + isbn + " no trobat.");
         } catch (IOException e) {
-            System.out.println("❌ Error eliminant el llibre: " + e.getMessage());
+            System.out.println(" Error eliminant el llibre: " + e.getMessage());
         }
     }
 
