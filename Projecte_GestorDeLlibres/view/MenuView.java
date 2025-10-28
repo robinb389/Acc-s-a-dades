@@ -17,6 +17,7 @@ public class MenuView {
         if (isAdmin) {
             System.out.println("3. Gestionar usuaris");
             System.out.println("4. Veure registres d'accés");
+            System.out.println("5. Editar Configuració");
         }
         System.out.println("0. Tancar sessió");
         System.out.print("Tria una opció: ");

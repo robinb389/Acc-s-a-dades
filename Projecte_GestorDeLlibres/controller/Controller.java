@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.Scanner;
+import model.Config;
 import model.User;
 import view.*;
 
@@ -14,16 +15,17 @@ public class Controller {
     private BookView bookView;
     private MenuView menuView;
     private User currentUser;
+    private Config config;
 
     public Controller() {
         scanner = new Scanner(System.in);
         userView = new UserView();
         bookView = new BookView();
         menuView = new MenuView();
-        
+        config = new Config();
         
         userController = new UserController(userView);
-        bookController = new BookController();
+        bookController = new BookController(bookView);
         logController = new LogController();
     }
 
@@ -34,7 +36,8 @@ public class Controller {
 
     public void run() {
         System.out.println("   BENVINGUT AL GESTOR DE LLIBRES");
-        System.out.println("Institut Castellet - 2n DAM - Accés a Dades");
+        System.out.println("Versió: " + config.getVersio() + " | Admin: " + config.getNomAdmin());
+        System.out.println("2n DAM - Accés a Dades");
         
         while (true) {
             MenuView.showStartMenu();
@@ -68,7 +71,7 @@ public class Controller {
         if (user != null) {
             currentUser = user;
             logController.logLogin(username, true);
-            menuView.showWelcome(username, user.isIsAdmin());
+            System.out.println("Benvingut/da " + user.getName());
             showMainMenu();
         } else {
             logController.logLogin(username, false);
@@ -123,6 +126,13 @@ public class Controller {
                 case 4:
                     if (currentUser.isIsAdmin()) {
                         logController.showLogs();
+                    } else {
+                        menuView.showInvalidOption();
+                    }
+                    break;
+                case 5:
+                    if (currentUser.isIsAdmin()) {
+                        handleEditConfig();
                     } else {
                         menuView.showInvalidOption();
                     }
@@ -234,6 +244,38 @@ public class Controller {
         }
     }
 
+    private void handleEditConfig() {
+        while (true) {
+            System.out.println("\n--- Editar Configuració ---");
+            System.out.println("1. Editar Versió (actualment: " + config.getVersio() + ")");
+            System.out.println("2. Editar Nom Admin (actualment: " + config.getNomAdmin() + ")");
+            System.out.println("0. Enrere");
+            System.out.print("Opció: ");
+            
+            int option = getIntInput();
+            
+            switch (option) {
+                case 1:
+                    System.out.print("Nova versió: ");
+                    String newVersio = scanner.nextLine();
+                    config.setVersio(newVersio);
+                    System.out.println("✓ Versió actualitzada");
+                    logController.logUserAction(currentUser.getUsername(), "Versió actualitzada a " + newVersio);
+                    break;
+                case 2:
+                    System.out.print("Nou nom admin: ");
+                    String newNomAdmin = scanner.nextLine();
+                    config.setNomAdmin(newNomAdmin);
+                    System.out.println("✓ Nom admin actualitzat");
+                    logController.logUserAction(currentUser.getUsername(), "Nom admin actualitzat a " + newNomAdmin);
+                    break;
+                case 0:
+                    return;
+                default:
+                    menuView.showInvalidOption();
+            }
+        }
+    }
 
     private User findUserByCredentials(String username, String password) {
         var users = userController.getAllUsers();
@@ -254,5 +296,9 @@ public class Controller {
                 System.out.print("Introdueix un número vàlid: ");
             }
         }
+    }
+
+    public Config getConfig() {
+        return config;
     }
 }

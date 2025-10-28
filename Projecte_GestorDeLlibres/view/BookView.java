@@ -18,12 +18,28 @@ public class BookView {
         System.out.println(" Llibre afegit correctament: " + book);
     }
 
+    public void showBookAlreadyExists(String isbn) {
+        System.out.println(" Error: El llibre amb ISBN " + isbn + " ja existeix.");
+    }
+
+    public void showAddBookError(String message) {
+        System.out.println(" Error afegint el llibre: " + message);
+    }
+
     public void showDeleteBookSuccess(String title) {
         System.out.println(" Llibre eliminat correctament: " + title);
     }
 
     public void showDeleteBookError(String isbn) {
-        System.out.println(" Llibre no trobat amb ISBN: " + isbn);
+        System.out.println(" Error: Llibre amb ISBN " + isbn + " no trobat.");
+    }
+
+    public void showSearchBookError(String message) {
+        System.out.println(" Error en la cerca: " + message);
+    }
+
+    public void showListBooksError(String message) {
+        System.out.println(" Error obtenint la llista de llibres: " + message);
     }
 
     public void showBookNotFound(String isbn) {

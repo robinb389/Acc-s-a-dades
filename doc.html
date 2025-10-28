@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java I/O Explained — RandomAccessFile, Data Streams, Buffered, and Object Streams</title>
+  <style>
+    body { font-family: "Segoe UI", Roboto, Arial, sans-serif; margin: 0 auto; padding: 20px; max-width: 1000px; line-height: 1.6; background: #f9fafc; color: #222; }
+    h1, h2, h3 { color: #0a3a63; }
+    pre { background: #f4f6f8; padding: 12px; border-radius: 6px; overflow-x: auto; }
+    code { font-family: Consolas, "Courier New", monospace; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #0a3a63; color: white; }
+    .note { background: #fff8dc; border-left: 5px solid #f4b400; padding: 10px; margin: 15px 0; border-radius: 5px; }
+    ul { margin-left: 20px; }
+    .section { background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>Java Input/Output (I/O) — Explained Simply</h1>
+  <p>This document explains some of the most commonly used Java I/O classes: <strong>RandomAccessFile</strong>, <strong>DataInput/DataOutput</strong>, <strong>BufferedReader/BufferedWriter</strong>, and <strong>ObjectInput/ObjectOutput</strong>.  
+  Each section includes its purpose, main methods, and short examples.  
+  At the end, you’ll find a complete <strong>mini-project example</strong> using <code>RandomAccessFile</code> for user registration, login, and book management.</p>
+
+  <!-- RANDOM ACCESS FILE -->
+  <div class="section">
+    <h2>1. RandomAccessFile</h2>
+    <p><strong>Package:</strong> <code>java.io</code></p>
+    <p><strong>Purpose:</strong> Read and write data to a file at any position (not just from start to end).  
+    You can move the file pointer anywhere using <code>seek(long pos)</code>.</p>
+
+    <h3>Key Features</h3>
+    <ul>
+      <li>Supports both reading and writing in the same file.</li>
+      <li>Can jump to any byte position in the file (random access).</li>
+      <li>Ideal for fixed-length records like user profiles or database-like storage.</li>
+    </ul>
+
+    <h3>Example</h3>
+    <pre><code>RandomAccessFile raf = new RandomAccessFile("example.txt", "rw");
+raf.seek(0);           // move to the beginning
+raf.writeUTF("Hello");
+raf.seek(0);
+System.out.println(raf.readUTF());
+raf.close();</code></pre>
+
+    <div class="note">
+      <strong>Tip:</strong> Use fixed-size strings when you want to jump directly to a specific record position.
+    </div>
+  </div>
+
+  <!-- DATA INPUT OUTPUT -->
+  <div class="section">
+    <h2>2. DataInput and DataOutput</h2>
+    <p><strong>Package:</strong> <code>java.io</code></p>
+    <p>These are <strong>interfaces</strong> that define methods to read and write primitive data types in a machine-independent way (e.g., <code>int</code>, <code>float</code>, <code>double</code>, <code>boolean</code>, <code>UTF</code> strings).</p>
+
+    <h3>Common Implementations</h3>
+    <ul>
+      <li><code>DataOutputStream</code> implements <code>DataOutput</code></li>
+      <li><code>DataInputStream</code> implements <code>DataInput</code></li>
+      <li><code>RandomAccessFile</code> also implements both</li>
+    </ul>
+
+    <h3>Example</h3>
+    <pre><code>// Write data
+DataOutputStream out = new DataOutputStream(new FileOutputStream("data.bin"));
+out.writeInt(42);
+out.writeDouble(3.14);
+out.writeUTF("Java");
+out.close();
+
+// Read data
+DataInputStream in = new DataInputStream(new FileInputStream("data.bin"));
+System.out.println(in.readInt());
+System.out.println(in.readDouble());
+System.out.println(in.readUTF());
+in.close();</code></pre>
+  </div>
+
+  <!-- BUFFERED READER WRITER -->
+  <div class="section">
+    <h2>3. BufferedReader and BufferedWriter</h2>
+    <p><strong>Package:</strong> <code>java.io</code></p>
+    <p>Buffered classes use a memory buffer to make text file operations faster and more efficient.</p>
+
+    <h3>Key Points</h3>
+    <ul>
+      <li><code>BufferedWriter</code> writes text efficiently to a file.</li>
+      <li><code>BufferedReader</code> reads text line by line efficiently.</li>
+      <li>Usually wrapped around <code>FileWriter</code> and <code>FileReader</code>.</li>
+    </ul>
+
+    <h3>Example</h3>
+    <pre><code>// Write text
+BufferedWriter writer = new BufferedWriter(new FileWriter("hello.txt"));
+writer.write("Hello, world!");
+writer.newLine();
+writer.write("This is buffered writing.");
+writer.close();
+
+// Read text
+BufferedReader reader = new BufferedReader(new FileReader("hello.txt"));
+String line;
+while ((line = reader.readLine()) != null) {
+    System.out.println(line);
+}
+reader.close();</code></pre>
+  </div>
+
+  <!-- OBJECT INPUT OUTPUT -->
+  <div class="section">
+    <h2>4. ObjectInput and ObjectOutput</h2>
+    <p><strong>Package:</strong> <code>java.io</code></p>
+    <p>Used to read and write entire Java objects using serialization.</p>
+
+    <h3>Key Points</h3>
+    <ul>
+      <li>Implemented by <code>ObjectOutputStream</code> and <code>ObjectInputStream</code>.</li>
+      <li>Objects must implement the <code>Serializable</code> interface.</li>
+      <li>Simplifies object persistence (saving/restoring Java objects to/from files).</li>
+    </ul>
+
+    <h3>Example</h3>
+    <pre><code>// Writing an object
+ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("object.dat"));
+oos.writeObject("Hello Object!");
+oos.close();
+
+// Reading an object
+ObjectInputStream ois = new ObjectInputStream(new FileInputStream("object.dat"));
+String text = (String) ois.readObject();
+System.out.println(text);
+ois.close();</code></pre>
+
+    <div class="note">
+      <strong>Note:</strong> Object serialization automatically saves all fields of an object, but you lose random-access control.
+    </div>
+  </div>
+
+  <!-- SUMMARY TABLE -->
+  <div class="section">
+    <h2>5. Summary Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Class / Interface</th>
+          <th>Purpose</th>
+          <th>Data Type</th>
+          <th>Direction</th>
+          <th>Typical Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>RandomAccessFile</td><td>Read/write file at any position</td><td>Binary/Text</td><td>Both</td><td>Databases, records</td></tr>
+        <tr><td>DataInput / DataOutput</td><td>Read/write primitive types</td><td>Binary</td><td>Both</td><td>Binary data files</td></tr>
+        <tr><td>BufferedReader / BufferedWriter</td><td>Read/write text efficiently</td><td>Text</td><td>Both</td><td>Text files, logs</td></tr>
+        <tr><td>ObjectInput / ObjectOutput</td><td>Read/write objects</td><td>Serialized objects</td><td>Both</td><td>Object persistence</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PRACTICAL EXAMPLE -->
+  <div class="section">
+    <h2>6. Practical Example — User and Book Management with RandomAccessFile</h2>
+    <p>This example shows how <code>RandomAccessFile</code> can be used to register and log in users, add books, and search for books, using fixed-length records for predictable positions.</p>
+
+    <pre><code>// RandomAccessFile Example
+// File: RandomAccessDemo.java
+
+import java.io.*;
+import java.util.*;
+
+public class RandomAccessDemo {
+    static final int USERNAME_LEN = 20;
+    static final int PASSWORD_LEN = 20;
+    static final int USER_RECORD_SIZE = (USERNAME_LEN + PASSWORD_LEN) * 2;
+
+    static final int TITLE_LEN = 50;
+    static final int AUTHOR_LEN = 30;
+    static final int BOOK_RECORD_SIZE = 4 + (TITLE_LEN + AUTHOR_LEN) * 2;
+
+    static String USERS_FILE = "users.dat";
+    static String BOOKS_FILE = "books.dat";
+
+    // --- Helper methods ---
+    static void writeFixed(RandomAccessFile raf, String text, int len) throws IOException {
+        StringBuilder sb = new StringBuilder(text);
+        if (sb.length() > len) sb.setLength(len);
+        while (sb.length() < len) sb.append(' ');
+        for (int i = 0; i < len; i++) raf.writeChar(sb.charAt(i));
+    }
+
+    static String readFixed(RandomAccessFile raf, int len) throws IOException {
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) sb.append(raf.readChar());
+        return sb.toString().trim();
+    }
+
+    // --- User methods ---
+    static void registerUser(String username, String password) throws IOException {
+        try (RandomAccessFile raf = new RandomAccessFile(USERS_FILE, "rw")) {
+            raf.seek(raf.length());
+            writeFixed(raf, username, USERNAME_LEN);
+            writeFixed(raf, password, PASSWORD_LEN);
+            System.out.println("User registered: " + username);
+        }
+    }
+
+    static boolean login(String username, String password) throws IOException {
+        try (RandomAccessFile raf = new RandomAccessFile(USERS_FILE, "r")) {
+            long count = raf.length() / USER_RECORD_SIZE;
+            for (int i = 0; i < count; i++) {
+                String u = readFixed(raf, USERNAME_LEN);
+                String p = readFixed(raf, PASSWORD_LEN);
+                if (u.equals(username) && p.equals(password)) return true;
+            }
+        }
+        return false;
+    }
+
+    // --- Book methods ---
+    static void addBook(String title, String author) throws IOException {
+        try (RandomAccessFile raf = new RandomAccessFile(BOOKS_FILE, "rw")) {
+            long count = raf.length() / BOOK_RECORD_SIZE;
+            int id = (int) count + 1;
+            raf.seek(raf.length());
+            raf.writeInt(id);
+            writeFixed(raf, title, TITLE_LEN);
+            writeFixed(raf, author, AUTHOR_LEN);
+            System.out.println("Book added: " + title);
+        }
+    }
+
+    static void searchBook(String query) throws IOException {
+        try (RandomAccessFile raf = new RandomAccessFile(BOOKS_FILE, "r")) {
+            long count = raf.length() / BOOK_RECORD_SIZE;
+            boolean found = false;
+            for (int i = 0; i < count; i++) {
+                int id = raf.readInt();
+                String title = readFixed(raf, TITLE_LEN);
+                String author = readFixed(raf, AUTHOR_LEN);
+                if (title.contains(query)) {
+                    System.out.printf("Found: ID=%d, Title=%s, Author=%s%n", id, title, author);
+                    found = true;
+                }
+            }
+            if (!found) System.out.println("No books found.");
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Scanner sc = new Scanner(System.in);
+        while (true) {
+            System.out.println("1) Register 2) Login 3) Add Book 4) Search Book 5) Exit");
+            String ch = sc.nextLine();
+            switch (ch) {
+                case "1":
+                    System.out.print("Username: "); String u = sc.nextLine();
+                    System.out.print("Password: "); String p = sc.nextLine();
+                    registerUser(u, p); break;
+                case "2":
+                    System.out.print("Username: "); u = sc.nextLine();
+                    System.out.print("Password: "); p = sc.nextLine();
+                    System.out.println(login(u, p) ? "Login OK" : "Invalid");
+                    break;
+                case "3":
+                    System.out.print("Title: "); String t = sc.nextLine();
+                    System.out.print("Author: "); String a = sc.nextLine();
+                    addBook(t, a); break;
+                case "4":
+                    System.out.print("Search: "); String q = sc.nextLine();
+                    searchBook(q); break;
+                case "5": System.out.println("Bye!"); return;
+                default: System.out.println("Invalid option");
+            }
+        }
+    }
+}</code></pre>
+
+    <div class="note">
+      <strong>Concepts used:</strong> Fixed-length records, seek operations, primitive reading/writing, file appending, text search.
+    </div>
+  </div>
+
+  <footer style="text-align:center; margin-top:30px; font-size:0.9rem; color:#555;">
+    <p>Created for educational purposes — Java I/O overview © 2025</p>
+  </footer>
+
+</body>
+</html>
